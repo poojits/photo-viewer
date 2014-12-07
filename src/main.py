@@ -19,7 +19,7 @@ for n in range(1, num_files+1):
     filename = 'data/image%03d.rgb' % n
     rgb_image = rgb.imread(filename)
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
-    hist = cv2.calcHist([hsv_image], [0,1,2], None, [8,8,8], [0,180,0,256,0, 256])
+    hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [8, 8, 8], [0, 180, 0, 256, 0, 256])
     hist = cv2.normalize(hist).flatten()
     data.append(hist)
 #---------------------------------------------------------------------------------  
@@ -36,13 +36,13 @@ for n in range(1, num_files+1):
     filename = 'data/image%03d.rgb' % n
     img = rgb.imread(filename)
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray_image,1.2,2)
+    faces = face_cascade.detectMultiScale(gray_image, 1.2, 2)
     if len(faces):
         idx.append(1)
-        shutil.copy2('data/image%03d.png' % n, 'face/' )
+        shutil.copy2('data/image%03d.png' % n, 'face/')
     if not len(faces):
         idx.append(2)
-        shutil.copy2('data/image%03d.png' % n, 'nonface/' )
+        shutil.copy2('data/image%03d.png' % n, 'nonface/')
 #print idx.count(1)
 #print idx.count(2)
 
@@ -54,7 +54,7 @@ for n in range(1, num_files+1):
 modified_data = []
 fileindex = []
 for n in range(0, num_files):
-    if(idx[n]==1):
+    if idx[n] == 1:
         modified_data.append(data[n])
         fileindex.append(n)
 
@@ -74,7 +74,7 @@ label = ward.labels_
 for l in range(1, K+1):
     mymkdir('face/%d' % l)
 for i, l in enumerate(label):
-    shutil.copy2('data/image%03d.png' % (fileindex[i]+1), 'face/%d/'%(int(l)+1))
+    shutil.copy2('data/image%03d.png' % (fileindex[i]+1), 'face/%d/' % (int(l)+1))
 #end_faces
 #-------------------------------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ for i, l in enumerate(label):
 modified_data = []
 fileindex = []
 for n in range(0, num_files):
-    if(idx[n]==2):
+    if idx[n] ==2:
         modified_data.append(data[n])
         fileindex.append(n)
 
@@ -104,7 +104,7 @@ label = ward.labels_
 for l in range(1, K+1):
     mymkdir('nonface/%d' % l)
 for i, l in enumerate(label):
-    shutil.copy2('data/image%03d.png' % (fileindex[i]+1), 'nonface/%d/'%(int(l)+1))
+    shutil.copy2('data/image%03d.png' % (fileindex[i]+1), 'nonface/%d/' % (int(l)+1))
 #end non faces
 
 #---------------------------------------------------------------------------------------------------
