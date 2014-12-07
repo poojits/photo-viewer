@@ -28,8 +28,10 @@ for n in range(1, num_files+1):
 #path for haarcascade_frontalface_default.xml
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 idx = [] 
-shutil.rmtree('face/')
-shutil.rmtree('nonface/')
+if os.path.isdir("face/"):
+    shutil.rmtree('face/')
+if os.path.isdir("nonface/"):
+    shutil.rmtree('nonface/')
 mymkdir('face')
 mymkdir('nonface')
 for n in range(1, num_files+1):
