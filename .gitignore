@@ -55,5 +55,7 @@ target/
 
 .idea/
 data/
-output/
-cluster/
+*output/
+*cluster/
+*face/
+*nonface/
