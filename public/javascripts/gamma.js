@@ -480,7 +480,6 @@ var Gamma = (function() {
 			var img_width = $('.masonry-brick img').css('width');
 			if(typeof(img_width)!=undefined){
 				var vid_ele = $('video.my_video');
-				console.log(vid_ele.length);
 				if(vid_ele.length!=0){
 					$('video').attr('width',img_width);
 					$('video').attr('height','');
@@ -667,7 +666,6 @@ var Gamma = (function() {
 						l = Gamma.svImage.position().left,
 						t = Gamma.svImage.position().top;
 
-						console.log(w+' '+h+' '+l+' '+t);
 
 					Gamma.svImage = $( '<img/>' ).load( function() {
 
