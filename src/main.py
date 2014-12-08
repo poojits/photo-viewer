@@ -11,6 +11,7 @@ import sys
 from timeit import itertools
 import json
 import random
+import videoClassifier
 
 num_files = 300
 
@@ -235,6 +236,7 @@ def main(argv):
     idx = partition_faces(data_dir, converted_dir, output_dir)
     cluster_faces(data, idx, output_dir)
     cluster_nonfaces(data, idx, output_dir)
+    videoClassifier.videoprocessor()
 
 if __name__ == '__main__':
     main(sys.argv)
