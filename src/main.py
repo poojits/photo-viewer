@@ -10,6 +10,7 @@ import getopt
 import sys
 from timeit import itertools
 import json
+import random
 
 num_files = 300
 
@@ -32,6 +33,7 @@ def mymkdir(directory):
 
 def get_image_features(data_dir):
     #-------------------------constructing histograms-------------------------------
+    global num_files
     data = []
     for n in range(1, num_files+1):
         filename = os.path.join(data_dir, 'image%03d.rgb' % n)
@@ -61,11 +63,15 @@ def partition_faces(data_dir, converted_dir, output_dir):
         filename = os.path.join(data_dir, 'image%03d.rgb' % n)
         img = rgb.imread(filename)
         gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray_image, 1.05, 3)
+        faces = face_cascade.detectMultiScale(gray_image, 1.05, 4, 0, (40,40))
         png_path = os.path.join(converted_dir, 'image%03d.png' % n)
         if len(faces):
             idx.append(1)
             shutil.copy2(png_path, face_path)
+            #for (x,y,w,h) in faces:
+            #    cv2.rectangle(img,(x,y),(x+w,y+h),(255,255,255),2)
+            #cv2.imshow('face', img)
+            #cv2.waitKey(0)
         if not len(faces):
             idx.append(2)
             shutil.copy2(png_path, nonface_path)
@@ -88,7 +94,7 @@ def cluster_faces(data, idx, output_dir):
 
     #print len(modified_data)
     #print len(fileindex)
-    print idx.count(1)
+    #print idx.count(1)
 
     # data is num_files x 64
     criteria = (cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -120,7 +126,7 @@ def cluster_faces(data, idx, output_dir):
     representative = []
     for i, idx in enumerate(corres_idx):
         obj = {}
-        obj[i+1] = fileindex[idx] + 1
+        obj[i+1] = 'image%03d.png' % (fileindex[idx] + 1)
         representative.append(obj)
     #print json.dumps(representative)
     f = open(os.path.join(face_path, 'rep.json'), 'w')
@@ -149,7 +155,7 @@ def cluster_nonfaces(data, idx, output_dir):
 
     #print len(modified_data)
     #print len(fileindex)
-    print idx.count(2)
+    #print idx.count(2)
 
     # data is num_files x 64
     criteria = (cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -181,7 +187,7 @@ def cluster_nonfaces(data, idx, output_dir):
     representative = []
     for i, idx in enumerate(corres_idx):
         obj = {}
-        obj[i+1] = fileindex[idx] + 1
+        obj[i+1] = 'image%03d.png' % (fileindex[idx] + 1)
         representative.append(obj)
     #print json.dumps(representative)
     f = open(os.path.join(nonface_path, 'rep.json'), 'w')
