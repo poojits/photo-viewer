@@ -25,9 +25,9 @@ def convert_data(input_dir, output_dir):
             cv2.imwrite(png_filepath, img)
         else:
             video = rgb.vdread(filepath)
-            video_filename = string.replace(f, '.rgb', '.mp4')
+            video_filename = string.replace(f, '.rgb', '.ogv')
             video_filepath = os.path.join(output_dir, video_filename)
-            video_writer = cv2.VideoWriter(video_filepath, cv2.cv.FOURCC('m', 'p', '4', 'v'), 30, (352, 288), True)
+            video_writer = cv2.VideoWriter(video_filepath, cv2.cv.FOURCC('t', 'h', 'e', 'o'), 30, (352, 288), True)
             for frame in video:
                 video_writer.write(frame)
             video_writer.release()
