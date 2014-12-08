@@ -55,5 +55,6 @@ def videoprocessor(data_dir, converted_dir, videoOutput_dir):
     for i in range(1,num_video+1):
         video_name = 'video%02d.ogv' % i
         src = os.path.join(converted_dir,video_name)
-        dst = os.path.join(videoOutput_dir,'%01d/' % video_cluster[i-1] + video_name)
+        dst = os.path.join(videoOutput_dir,os.path.join('%01d' % video_cluster[i-1],video_name))
         shutil.copy2(src, dst)
+        
