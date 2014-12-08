@@ -9,6 +9,7 @@ from sklearn.neighbors import kneighbors_graph
 import getopt
 import sys
 from timeit import itertools
+import json
 
 num_files = 300
 
@@ -17,6 +18,12 @@ def usage():
     msg = '''Usage: python main.py -d <data directory> -c <converted data directory> -o <output directory>'''
     print msg
 
+def count(labels, k):
+    c = [0] * k
+    for i,l in enumerate(labels):
+        c[l] += 1
+    return c
+        
 
 def mymkdir(directory):
     if not os.path.exists(directory):
@@ -54,7 +61,7 @@ def partition_faces(data_dir, converted_dir, output_dir):
         filename = os.path.join(data_dir, 'image%03d.rgb' % n)
         img = rgb.imread(filename)
         gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray_image, 1.2, 2)
+        faces = face_cascade.detectMultiScale(gray_image, 1.05, 3)
         png_path = os.path.join(converted_dir, 'image%03d.png' % n)
         if len(faces):
             idx.append(1)
@@ -93,6 +100,34 @@ def cluster_faces(data, idx, output_dir):
     #ret, label, center = cv2.kmeans(np.array(data), K, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
     label = ward.labels_
     face_path = os.path.join(output_dir, 'face')
+    
+    #Repsentatives 
+    cluster_count = count(label, K)
+    clusterdata = np.zeros((K, len(modified_data[0])))
+    min_distance = [9999999] * K
+    corres_idx = [0] * K 
+    for x in range(1, K+1):
+        for i, l in enumerate(label):
+            if l == x-1:
+                np.add(clusterdata[l], modified_data[i]/ float(cluster_count[l]))
+        for i, l in enumerate(label):
+            if l == x-1:
+                d = np.linalg.norm(clusterdata[l]-modified_data[i])
+                if d < min_distance[l]:
+                    min_distance[l] = d
+                    corres_idx[l] = i 
+                    
+    representative = []
+    for i, idx in enumerate(corres_idx):
+        obj = {}
+        obj[i+1] = fileindex[idx] + 1
+        representative.append(obj)
+    #print json.dumps(representative)
+    f = open(os.path.join(face_path, 'rep.json'), 'w')
+    f.write(json.dumps(representative))
+    f.close()
+    #end of reps
+    
     for l in range(1, K+1):
         mymkdir(os.path.join(face_path, '%d' % l))
     for i, l in enumerate(label):
@@ -126,6 +161,34 @@ def cluster_nonfaces(data, idx, output_dir):
     #ret, label, center = cv2.kmeans(np.array(data), K, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
     label = ward.labels_
     nonface_path = os.path.join(output_dir, 'nonface')
+    
+    #Repsentatives 
+    cluster_count = count(label, K)
+    clusterdata = np.zeros((K, len(modified_data[0])))
+    min_distance = [9999999] * K
+    corres_idx = [0] * K 
+    for x in range(1, K+1):
+        for i, l in enumerate(label):
+            if l == x-1:
+                np.add(clusterdata[l], modified_data[i]/ float(cluster_count[l]))
+        for i, l in enumerate(label):
+            if l == x-1:
+                d = np.linalg.norm(clusterdata[l]-modified_data[i])
+                if d < min_distance[l]:
+                    min_distance[l] = d
+                    corres_idx[l] = i 
+                    
+    representative = []
+    for i, idx in enumerate(corres_idx):
+        obj = {}
+        obj[i+1] = fileindex[idx] + 1
+        representative.append(obj)
+    #print json.dumps(representative)
+    f = open(os.path.join(nonface_path, 'rep.json'), 'w')
+    f.write(json.dumps(representative))
+    f.close()
+    #end of reps
+    
     for l in range(1, K+1):
         mymkdir(os.path.join(nonface_path, '%d' % l))
     for i, l in enumerate(label):
