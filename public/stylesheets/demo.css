@@ -44,13 +44,22 @@ a {
 }
 
 .main {
-	padding: 30px 20px 100px 20px;
 	max-width: 1580px;
 	margin: 0 auto;
 }
 
 .main > header {
-	padding: 0 10px 30px;
+	position: fixed;
+	z-index: 999;
+	background:#FFF;
+  /*border:1px solid #CCC;*/
+  width: 100%;
+  top: 0;
+  padding-top: 10px;
+  padding-left: 10px;
+  -webkit-box-shadow: 0 1px 10px 0 #CCC;
+	box-shadow: 0 1px 10px 0 #CCC;
+	left: 0;
 }
 
 .main > header h1 {
@@ -300,5 +309,8 @@ a {
 	-o-transform: skew(35deg, 0);
 	-ms-transform: skew(35deg, 0);
 	transform: skew(35deg, 0);
+}
+#nav-buttons {
+	margin-left: 10px;
 }
 
