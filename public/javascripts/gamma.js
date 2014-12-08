@@ -407,12 +407,22 @@ var Gamma = (function() {
 				} );
 
 				$( '<div/>' ).addClass( 'gamma-description' ).html( description ).insertAfter( $picEl );
-
-				$( '<img/>' ).attr( {
-					alt : $picEl.data( 'alt' ),
-					title : $picEl.data( 'title' ),
-					src : source.src
-				} ).insertAfter( $picEl );
+				if(source.src.indexOf('ogv')<0){
+					$( '<img/>' ).attr( {
+						alt : $picEl.data( 'alt' ),
+						title : $picEl.data( 'title' ),
+						src : source.src
+					} ).insertAfter( $picEl );
+				}else{
+					var $vid_src = $('<source/>').attr({
+						src: source.src,
+						type: "video/ogg",
+						alt: $picEl.data( 'alt' ),
+						title : $picEl.data( 'title' )
+					});
+					var $vid = $('<video width="258" height="210" controls/>').append($vid_src);
+					$vid.insertAfter($picEl);
+				}
 
 				$picEl.remove();
 
