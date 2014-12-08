@@ -477,6 +477,11 @@ var Gamma = (function() {
 
 			// set the widths (%) for each of the <li>
 			Gamma.items.css( 'width', Math.floor( containerW / Gamma.columns ) * 100 / containerW + '%' );
+			var img_width = $('.masonry-brick img').css('width');
+			if(typeof(img_width)!=undefined){
+				$('video').attr('width',img_width);
+				$('video').attr('height','');
+			}
 
 		},
 		// initialize masonry
@@ -610,6 +615,7 @@ var Gamma = (function() {
 					source = _chooseImgSource( $item.data( 'source' ), Gamma.items.outerWidth( true ) );
 
 				$item.find( 'img' ).attr( 'src', source.src );
+				console.log('resize grid');
 
 			} );
 
@@ -656,6 +662,8 @@ var Gamma = (function() {
 						h = Gamma.svImage.height(),
 						l = Gamma.svImage.position().left,
 						t = Gamma.svImage.position().top;
+
+						console.log(w+' '+h+' '+l+' '+t);
 
 					Gamma.svImage = $( '<img/>' ).load( function() {
 
