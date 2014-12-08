@@ -193,6 +193,10 @@ var Gamma = (function() {
 		},
 		init = function( settings, callback ) {
 
+			$('button.gamma-btn-close').on('click', function(){
+				console.log('clicked');
+				_closesingleview();
+			});
 			Gamma.settings = $.extend( true, {}, defaults, settings );
 
 			// cache some elements..
@@ -407,7 +411,7 @@ var Gamma = (function() {
 				} );
 
 				$( '<div/>' ).addClass( 'gamma-description' ).html( description ).insertAfter( $picEl );
-				if(source.src.indexOf('ogv')<0){
+				if(source.src.indexOf('.ogv')<0){
 					$( '<img/>' ).attr( {
 						alt : $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' ),
@@ -420,7 +424,11 @@ var Gamma = (function() {
 						alt: $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' )
 					});
-					var $vid = $('<video width="258" height="210" controls/>').append($vid_src);
+					var $vid = $('<video width="258" height="210" controls/>').attr({
+						alt: $picEl.data( 'alt' ),
+						title: $picEl.data( 'title' ),
+						src: source.src
+					}).append($vid_src);
 					$vid.insertAfter($picEl);
 				}
 
@@ -761,8 +769,9 @@ var Gamma = (function() {
 				}
 				
 			if( anim ) {
+				Gamma.fly = '';
 				if(is_vid){
-					Gamma.fly = $( '<video controls/>' ).addClass( 'gamma-img-fly' ).css( {
+					Gamma.fly = $( '<video controls/>' ).attr( 'src', $img.attr( 'src' ) ).addClass( 'gamma-img-fly' ).css( {
 						width : $img.width(),
 						height : $img.height(),
 						left : $item.offset().left + ( $item.outerWidth( true ) - $item.width() ) / 2,
@@ -1021,11 +1030,17 @@ var Gamma = (function() {
 		// closes the single view
 		_closesingleview = function() {
 
-			if( Gamma.isAnimating || Gamma.fly ) {
-
+			var is_vid = false;
+				var $item = Gamma.items.eq( Gamma.current ),
+						$img = $item.children( 'img' );
+				if($img.length==0){
+					$img = $item.children('video');
+					is_vid = true;
+				}
+			/*if( Gamma.isAnimating || Gamma.fly ) {
 				return false;
 
-			}
+			}*/
 
 			Gamma.isSV = false;
 
@@ -1035,9 +1050,6 @@ var Gamma = (function() {
 
 			}
 
-			var $item = Gamma.items.eq( Gamma.current ),
-				$img = $item.children( 'img' );
-				if($img.length==0) $img = $item.children('video');
 
 			Gamma.items.not( $item ).css( 'visibility', 'visible' );
 
@@ -1123,7 +1135,10 @@ var Gamma = (function() {
 
 				}
 
-				_saveState();
+				//_saveState();
+				if(is_vid) {
+					$('video').last().remove();
+				}
 
 			}, 25 );
 
@@ -1173,9 +1188,11 @@ var Gamma = (function() {
 			// preload image for Gamma.current + 1
 			var next = Gamma.current < Gamma.itemsCount - 1 ? Gamma.current + 1 :
 				Gamma.settings.circular ? 0 : Gamma.current,
-				$item = Gamma.items.eq( next ),
-				$img = $item.children( 'img' ),
-				finalConfig = _getFinalImgConfig( {
+				$item = Gamma.items.eq( next );
+
+				var $img = $item.children( 'img' );
+				if($img.length==0) return;
+				var finalConfig = _getFinalImgConfig( {
 
 					sources : $item.data( 'source' ),
 					imgMaxW : $item.data( 'maxwidth' ),
