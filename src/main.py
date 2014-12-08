@@ -98,14 +98,13 @@ def cluster_faces(data, idx, output_dir):
     #print idx.count(1)
 
     # data is num_files x 64
-    criteria = (cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    K = 7
-    connectivity = kneighbors_graph(modified_data, n_neighbors=3)
-    ward = AgglomerativeClustering(n_clusters=7, connectivity=connectivity,
-                                   linkage='ward').fit(np.array(modified_data))
+    criteria = (cv2.TERM_CRITERIA_EPS, 100, 1.0)
+    K = 8
+    #connectivity = kneighbors_graph(modified_data, n_neighbors=3)
+    #ward = AgglomerativeClustering(n_clusters=8, connectivity=connectivity, linkage='ward').fit(np.array(modified_data))
     #ward = AgglomerativeClustering(n_clusters=K, linkage='ward').fit(np.array(data))
-    #ret, label, center = cv2.kmeans(np.array(data), K, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-    label = ward.labels_
+    ret, label, center = cv2.kmeans(np.array(modified_data), K, criteria, 10, cv2.KMEANS_PP_CENTERS)
+    #label = ward.labels_
     face_path = os.path.join(output_dir, 'face')
     
     #Repsentatives 
@@ -159,14 +158,13 @@ def cluster_nonfaces(data, idx, output_dir):
     #print idx.count(2)
 
     # data is num_files x 64
-    criteria = (cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    criteria = (cv2.TERM_CRITERIA_EPS, 100, 1.0)
     K = 8
-    connectivity = kneighbors_graph(modified_data, n_neighbors=3)
-    ward = AgglomerativeClustering(n_clusters=8, connectivity=connectivity,
-                                   linkage='ward').fit(np.array(modified_data))
+    #connectivity = kneighbors_graph(modified_data, n_neighbors=3)
+    #ward = AgglomerativeClustering(n_clusters=8, connectivity=connectivity, linkage='ward').fit(np.array(modified_data))
     #ward = AgglomerativeClustering(n_clusters=K, linkage='ward').fit(np.array(data))
-    #ret, label, center = cv2.kmeans(np.array(data), K, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-    label = ward.labels_
+    ret, label, center = cv2.kmeans(np.array(modified_data), K, criteria, 100, cv2.KMEANS_PP_CENTERS)
+    #label = ward.labels_
     nonface_path = os.path.join(output_dir, 'nonface')
     
     #Repsentatives 
