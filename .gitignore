@@ -85,4 +85,4 @@ node_modules
 .idea/
 data/
 converted/
-clusters/
+public/images/cluster/

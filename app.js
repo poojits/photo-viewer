@@ -59,7 +59,7 @@ app.use(function(err, req, res, next) {
 
 var server = app.listen(app.get('port'), function(){
     console.log('Server listening on port ' + app.get('port'));
-    if(window.location.href.indexOf('localhost') < 0) {
+    /*if(window.location.href.indexOf('localhost') < 0) {
         window.location = 'http://localhost:' + app.get('port');
-    }
+    }*/
 });
