@@ -194,7 +194,6 @@ var Gamma = (function() {
 		init = function( settings, callback ) {
 
 			$('button.gamma-btn-close').on('click', function(){
-				console.log('clicked');
 				_closesingleview();
 			});
 			Gamma.settings = $.extend( true, {}, defaults, settings );
@@ -420,7 +419,7 @@ var Gamma = (function() {
 				}else{
 					var $vid_src = $('<source/>').attr({
 						src: source.src,
-						type: "video/ogg",
+						type: "video/ogv",
 						alt: $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' )
 					});
@@ -442,7 +441,6 @@ var Gamma = (function() {
 
 			var theSources = [];
 			$el.children( 'div' ).each( function( i ) {
-
 				var $source = $( this );
 				theSources.push( {
 					width : $source.data( 'minWidth' ) || 0,
