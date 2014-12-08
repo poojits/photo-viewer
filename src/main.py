@@ -12,6 +12,7 @@ from timeit import itertools
 import json
 import random
 import videoClassifier
+import time
 
 num_files = 300
 
@@ -34,7 +35,7 @@ def mymkdir(directory):
 
 def get_image_features(data_dir):
     #-------------------------constructing histograms-------------------------------
-    global num_files
+    
     data = []
     for n in range(1, num_files+1):
         filename = os.path.join(data_dir, 'image%03d.rgb' % n)
@@ -44,6 +45,7 @@ def get_image_features(data_dir):
         hist = cv2.normalize(hist).flatten()
         data.append(hist)
     return data
+
     #---------------------------------------------------------------------------------
 
 
@@ -76,8 +78,6 @@ def partition_faces(data_dir, converted_dir, output_dir):
         if not len(faces):
             idx.append(2)
             shutil.copy2(png_path, nonface_path)
-    #print idx.count(1)
-    #print idx.count(2)
     return idx
 
     #--------------------------------------------------------------
@@ -93,32 +93,18 @@ def cluster_faces(data, idx, output_dir):
             modified_data.append(data[n])
             fileindex.append(n)
 
-    #print len(modified_data)
-    #print len(fileindex)
-    #print idx.count(1)
-
-    # data is num_files x 64
     criteria = (cv2.TERM_CRITERIA_EPS, 100, 1.0)
     K = 8
-    #connectivity = kneighbors_graph(modified_data, n_neighbors=3)
-    #ward = AgglomerativeClustering(n_clusters=8, connectivity=connectivity, linkage='ward').fit(np.array(modified_data))
-    #ward = AgglomerativeClustering(n_clusters=K, linkage='ward').fit(np.array(data))
     ret, label, center = cv2.kmeans(np.array(modified_data), K, criteria, 10, cv2.KMEANS_PP_CENTERS)
-    #label = ward.labels_
     face_path = os.path.join(output_dir, 'face')
     
-    #Repsentatives 
-    cluster_count = count(label, K)
-    clusterdata = np.zeros((K, len(modified_data[0])))
+    #Representatives 
     min_distance = [9999999] * K
     corres_idx = [0] * K 
     for x in range(1, K+1):
         for i, l in enumerate(label):
             if l == x-1:
-                np.add(clusterdata[l], modified_data[i]/ float(cluster_count[l]))
-        for i, l in enumerate(label):
-            if l == x-1:
-                d = np.linalg.norm(clusterdata[l]-modified_data[i])
+                d = np.linalg.norm(center[l]-modified_data[i])
                 if d < min_distance[l]:
                     min_distance[l] = d
                     corres_idx[l] = i 
@@ -128,7 +114,6 @@ def cluster_faces(data, idx, output_dir):
         obj = {}
         obj[i+1] = 'image%03d.png' % (fileindex[idx] + 1)
         representative.append(obj)
-    #print json.dumps(representative)
     f = open(os.path.join(face_path, 'rep.json'), 'w')
     f.write(json.dumps(representative))
     f.close()
@@ -153,36 +138,22 @@ def cluster_nonfaces(data, idx, output_dir):
             modified_data.append(data[n])
             fileindex.append(n)
 
-    #print len(modified_data)
-    #print len(fileindex)
-    #print idx.count(2)
-
-    # data is num_files x 64
     criteria = (cv2.TERM_CRITERIA_EPS, 100, 1.0)
     K = 8
-    #connectivity = kneighbors_graph(modified_data, n_neighbors=3)
-    #ward = AgglomerativeClustering(n_clusters=8, connectivity=connectivity, linkage='ward').fit(np.array(modified_data))
-    #ward = AgglomerativeClustering(n_clusters=K, linkage='ward').fit(np.array(data))
     ret, label, center = cv2.kmeans(np.array(modified_data), K, criteria, 100, cv2.KMEANS_PP_CENTERS)
-    #label = ward.labels_
     nonface_path = os.path.join(output_dir, 'nonface')
     
-    #Repsentatives 
-    cluster_count = count(label, K)
-    clusterdata = np.zeros((K, len(modified_data[0])))
+    #Representatives 
     min_distance = [9999999] * K
     corres_idx = [0] * K 
     for x in range(1, K+1):
         for i, l in enumerate(label):
             if l == x-1:
-                np.add(clusterdata[l], modified_data[i]/ float(cluster_count[l]))
-        for i, l in enumerate(label):
-            if l == x-1:
-                d = np.linalg.norm(clusterdata[l]-modified_data[i])
+                d = np.linalg.norm(center[l]-modified_data[i])
                 if d < min_distance[l]:
                     min_distance[l] = d
                     corres_idx[l] = i 
-                    
+
     representative = []
     for i, idx in enumerate(corres_idx):
         obj = {}
@@ -230,12 +201,34 @@ def main(argv):
             output_dir = a
         else:
             assert False, "unhandled option"
+    print 'Image feature extraction'
+    t0 = time.time()
     data = get_image_features(data_dir)
+    t1 = time.time()
+    print '----',t1-t0,'s ----'
+    print 'face detection'
+    t0 = time.time()
     idx = partition_faces(data_dir, converted_dir, output_dir)
+    t1 = time.time()
+    print '----',t1-t0,'s ----'
+    print 'clustering faces'
+    t0 = time.time()
     cluster_faces(data, idx, output_dir)
+    t1 = time.time()
+    print '----',t1-t0,'s ----'
+    print 'clustering non faces'
+    t0 = time.time()
     cluster_nonfaces(data, idx, output_dir)
+    t1 = time.time()
+    print '----',t1-t0,'s ----'
+    print 'video classifiers'
+    t0 = time.time()
     videoOutput_dir = os.path.join(output_dir, 'nonface')
     videoClassifier.videoprocessor(data_dir, converted_dir, videoOutput_dir)
+    t1 = time.time()
+    print '----',t1-t0,'s ----'
+    print 'DONE!!!'
+
 
 if __name__ == '__main__':
     main(sys.argv)
