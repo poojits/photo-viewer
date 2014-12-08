@@ -193,6 +193,9 @@ var Gamma = (function() {
 		},
 		init = function( settings, callback ) {
 
+			$('button.gamma-btn-close').on('click', function(){
+				_closesingleview();
+			});
 			Gamma.settings = $.extend( true, {}, defaults, settings );
 
 			// cache some elements..
@@ -407,7 +410,7 @@ var Gamma = (function() {
 				} );
 
 				$( '<div/>' ).addClass( 'gamma-description' ).html( description ).insertAfter( $picEl );
-				if(source.src.indexOf('ogv')<0){
+				if(source.src.indexOf('.ogv')<0){
 					$( '<img/>' ).attr( {
 						alt : $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' ),
@@ -416,11 +419,15 @@ var Gamma = (function() {
 				}else{
 					var $vid_src = $('<source/>').attr({
 						src: source.src,
-						type: "video/ogg",
+						type: "video/ogv",
 						alt: $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' )
 					});
-					var $vid = $('<video width="258" height="210" controls/>').append($vid_src);
+					var $vid = $('<video class="my_video" width="258" height="210" controls/>').attr({
+						alt: $picEl.data( 'alt' ),
+						title: $picEl.data( 'title' ),
+						src: source.src
+					}).append($vid_src);
 					$vid.insertAfter($picEl);
 				}
 
@@ -434,7 +441,6 @@ var Gamma = (function() {
 
 			var theSources = [];
 			$el.children( 'div' ).each( function( i ) {
-
 				var $source = $( this );
 				theSources.push( {
 					width : $source.data( 'minWidth' ) || 0,
@@ -471,6 +477,15 @@ var Gamma = (function() {
 
 			// set the widths (%) for each of the <li>
 			Gamma.items.css( 'width', Math.floor( containerW / Gamma.columns ) * 100 / containerW + '%' );
+			var img_width = $('.masonry-brick img').css('width');
+			if(typeof(img_width)!=undefined){
+				var vid_ele = $('video.my_video');
+				if(vid_ele.length!=0){
+					$('video').attr('width',img_width);
+					$('video').attr('height','');
+				}
+			}
+			$(window).resize();
 
 		},
 		// initialize masonry
@@ -651,6 +666,7 @@ var Gamma = (function() {
 						l = Gamma.svImage.position().left,
 						t = Gamma.svImage.position().top;
 
+
 					Gamma.svImage = $( '<img/>' ).load( function() {
 
 						var $img = $( this );
@@ -761,8 +777,9 @@ var Gamma = (function() {
 				}
 				
 			if( anim ) {
+				Gamma.fly = '';
 				if(is_vid){
-					Gamma.fly = $( '<video controls/>' ).addClass( 'gamma-img-fly' ).css( {
+					Gamma.fly = $( '<video controls/>' ).attr( 'src', $img.attr( 'src' ) ).addClass( 'gamma-img-fly' ).css( {
 						width : $img.width(),
 						height : $img.height(),
 						left : $item.offset().left + ( $item.outerWidth( true ) - $item.width() ) / 2,
@@ -1021,11 +1038,17 @@ var Gamma = (function() {
 		// closes the single view
 		_closesingleview = function() {
 
-			if( Gamma.isAnimating || Gamma.fly ) {
-
+			var is_vid = false;
+				var $item = Gamma.items.eq( Gamma.current ),
+						$img = $item.children( 'img' );
+				if($img.length==0){
+					$img = $item.children('video');
+					is_vid = true;
+				}
+			/*if( Gamma.isAnimating || Gamma.fly ) {
 				return false;
 
-			}
+			}*/
 
 			Gamma.isSV = false;
 
@@ -1035,9 +1058,6 @@ var Gamma = (function() {
 
 			}
 
-			var $item = Gamma.items.eq( Gamma.current ),
-				$img = $item.children( 'img' );
-				if($img.length==0) $img = $item.children('video');
 
 			Gamma.items.not( $item ).css( 'visibility', 'visible' );
 
@@ -1123,7 +1143,11 @@ var Gamma = (function() {
 
 				}
 
-				_saveState();
+				//_saveState();
+				if(is_vid) {
+					$('video').last().remove();
+					$(window).resize();
+				}
 
 			}, 25 );
 
@@ -1173,9 +1197,11 @@ var Gamma = (function() {
 			// preload image for Gamma.current + 1
 			var next = Gamma.current < Gamma.itemsCount - 1 ? Gamma.current + 1 :
 				Gamma.settings.circular ? 0 : Gamma.current,
-				$item = Gamma.items.eq( next ),
-				$img = $item.children( 'img' ),
-				finalConfig = _getFinalImgConfig( {
+				$item = Gamma.items.eq( next );
+
+				var $img = $item.children( 'img' );
+				if($img.length==0) return;
+				var finalConfig = _getFinalImgConfig( {
 
 					sources : $item.data( 'source' ),
 					imgMaxW : $item.data( 'maxwidth' ),

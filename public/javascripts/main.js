@@ -52,28 +52,28 @@ $(document).ready(function() {
                         + img_desc+'" data-max-width="660" data-max-height="540"><div data-src="'
                         + img_src+'" data-min-width="200"></div></div></li>';
                 Gamma.add($(html));
-                $(window).resize(); //triggers resize and redraws DOM
             }
+            $(window).resize(); //triggers resize and redraws DOM
             if(json.files.length==0){
                 $('ul.gamma-gallery').unbind();
                 $('ul.gamma-gallery').on('click', sendNewPageRequest);
             }
             else { //leaf level
                 for(var i=0;i<json.files.length;i++){
-                //console.log(json.directories[i]);
-                var splitO = json.files[i].split('/');
-                var img_name = splitO[splitO.length-1];
-                var img_desc = '<h3>'+img_name+'</h3>';
-                var img_src =  json.files[i];
-                var dir_name = '';
-                var html = '<li cluster="'
-                        + dir_name+'"><div data-alt="'
-                        + img_name+'" data-description="'
-                        + img_desc+'" data-max-width="660" data-max-height="540"><div data-src="'
-                        + img_src+'" data-min-width="200"></div></div></li>';
-                Gamma.add($(html));
+                    //console.log(json.directories[i]);
+                    var splitO = json.files[i].split('/');
+                    var img_name = splitO[splitO.length-1];
+                    var img_desc = '<h3>'+img_name+'</h3>';
+                    var img_src =  json.files[i];
+                    var dir_name = '';
+                    var html = '<li cluster="'
+                            + dir_name+'"><div data-alt="'
+                            + img_name+'" data-description="'
+                            + img_desc+'" data-max-width="660" data-max-height="540"><div data-src="'
+                            + img_src+'" data-min-width="200"></div></div></li>';
+                    Gamma.add($(html));
+                }
                 $(window).resize(); //triggers resize and redraws DOM
-            }
             }
       });
     }
