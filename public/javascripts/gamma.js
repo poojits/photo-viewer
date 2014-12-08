@@ -751,18 +751,31 @@ var Gamma = (function() {
 
 			Gamma.isSV = true;
 
+			var is_vid = false;
 			var id = $item.index(),
 				data = $item.data(),
 				$img = $item.children( 'img' );
+				if($img.length == 0){
+					$img = $item.children( 'video');
+					is_vid = true;
+				}
 				
 			if( anim ) {
-
-				Gamma.fly = $( '<img/>' ).attr( 'src', $img.attr( 'src' ) ).addClass( 'gamma-img-fly' ).css( {
-					width : $img.width(),
-					height : $img.height(),
-					left : $item.offset().left + ( $item.outerWidth( true ) - $item.width() ) / 2,
-					top : $item.offset().top + ( $item.outerHeight( true ) - $item.height() ) / 2
-				} ).appendTo( $body );
+				if(is_vid){
+					Gamma.fly = $( '<video controls/>' ).addClass( 'gamma-img-fly' ).css( {
+						width : $img.width(),
+						height : $img.height(),
+						left : $item.offset().left + ( $item.outerWidth( true ) - $item.width() ) / 2,
+						top : $item.offset().top + ( $item.outerHeight( true ) - $item.height() ) / 2
+					} ).append($img[0].firstChild).appendTo( $body );
+				}else{
+					Gamma.fly = $( '<img/>' ).attr( 'src', $img.attr( 'src' ) ).addClass( 'gamma-img-fly' ).css( {
+						width : $img.width(),
+						height : $img.height(),
+						left : $item.offset().left + ( $item.outerWidth( true ) - $item.width() ) / 2,
+						top : $item.offset().top + ( $item.outerHeight( true ) - $item.height() ) / 2
+					} ).appendTo( $body );
+				}
 
 				if( Gamma.supportTransitions ) {
 
@@ -1024,6 +1037,7 @@ var Gamma = (function() {
 
 			var $item = Gamma.items.eq( Gamma.current ),
 				$img = $item.children( 'img' );
+				if($img.length==0) $img = $item.children('video');
 
 			Gamma.items.not( $item ).css( 'visibility', 'visible' );
 
@@ -1263,6 +1277,7 @@ var Gamma = (function() {
 					if( Gamma.settings.nextOnClickImage ) {
 
 						Gamma.singleview.on( 'click.gamma', 'img', function() { _onnavigate( 'next' ); } );
+						Gamma.singleview.on( 'click.gamma', 'video', function() { _onnavigate( 'next' ); } );
 
 					}
 
