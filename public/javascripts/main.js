@@ -29,7 +29,7 @@ $(document).ready(function() {
             Gamma.add( $( newitems ) );
         } );
     }
-    /*$.getJSON( "/cluster" , {directory: "root"}, function( json ) {
+    $.getJSON( "/cluster" , {directory: "root"}, function( json ) {
         var items = "";
         for(var i=0;i<json.directories.length;i++){
             console.log(json.directories[i]);
@@ -41,7 +41,7 @@ $(document).ready(function() {
             var html = '<li><div data-alt="'
                     + img_name+'" data-description="'
                     + img_desc+'" data-max-width="1800" data-max-height="1350"><div data-src="'
-                    + img_src+'" data-min-width="200"></div></div></li>'
+                    + img_src+'" data-min-width="200"></div></div></li>';
             items = items.concat(html);
         }
         console.log(items);

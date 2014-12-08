@@ -189,7 +189,7 @@ var Gamma = (function() {
 			// slideshow interval (ms)
 			interval : 4000,
 			// if History API is not supported this value will turn false
-			historyapi : true
+			historyapi : false
 		},
 		init = function( settings, callback ) {
 
