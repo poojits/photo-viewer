@@ -236,7 +236,8 @@ def main(argv):
     idx = partition_faces(data_dir, converted_dir, output_dir)
     cluster_faces(data, idx, output_dir)
     cluster_nonfaces(data, idx, output_dir)
-    videoClassifier.videoprocessor()
+    videoOutput_dir = os.path.join(output_dir, 'nonface')
+    videoClassifier.videoprocessor(data_dir, converted_dir, videoOutput_dir)
 
 if __name__ == '__main__':
     main(sys.argv)
