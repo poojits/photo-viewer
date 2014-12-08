@@ -4,10 +4,10 @@
   "private": true,
   "main": "index.html",
   "window": {
-    "width": 1024,
-    "height": 768,
+    "width": 850,
+    "height": 600,
     "title": "Photo-Viewer",
-    "toolbar": true
+    "toolbar": false
   },
   "scripts": {
     "start": "nodewebkit"

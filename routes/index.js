@@ -58,34 +58,40 @@ router.get('/', function(req, res) {
 });
 
 router.get('/cluster', function(req, res) {
-  if(req.query.directory == "root"){
-    var dir = './public/images/cluster';
+    var dir = './public/' + req.query.directory;
+    var repExists = false;
     fs.readdir(dir, function(err, list) {
       var files = [];
       var directory = []; 
       list.forEach(function(file) {
         file = dir + '/' + file;
-        if(file.indexOf('.DS_Store')<0 && file.indexOf('rep.json')<0){
-          if(fs.lstatSync(file).isDirectory())
-            directory.push(file.replace('./public/',''));
-          else
-            files.push(file.replace('./public/',''));
+        if(file.indexOf('rep.json')<0){
+          if(file.indexOf('.DS_Store')<0){
+            if(fs.lstatSync(file).isDirectory())
+              directory.push(file.replace('./public/',''));
+            else
+              files.push(file.replace('./public/',''));
+          }
+        }
+        else{
+          repExists = true;
         }
       });
       var obj = {};
-      var rep = JSON.parse(fs.readFileSync(dir+'/rep.json', "utf8"));
       var dirArray = [];
-      for(var i=0;i<directory.length;i++){
-        var dirobj = {};
-        dirobj["name"] = directory[i];
-        dirobj["rep"] = findValInArray(rep, getDir(directory[i]));
-        dirArray.push(dirobj);
+      if(repExists){
+        var rep = JSON.parse(fs.readFileSync(dir+'/rep.json', "utf8"));
+        for(var i=0;i<directory.length;i++){
+          var dirobj = {};
+          dirobj["name"] = directory[i];
+          dirobj["rep"] = findValInArray(rep, getDir(directory[i]));
+          dirArray.push(dirobj);
+        }
       }
       obj["files"] = files;
       obj["directories"] = dirArray;
       res.json(obj);
     });
-  }
 });
 
 module.exports = router;
