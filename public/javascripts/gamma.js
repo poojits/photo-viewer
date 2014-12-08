@@ -423,7 +423,7 @@ var Gamma = (function() {
 						alt: $picEl.data( 'alt' ),
 						title : $picEl.data( 'title' )
 					});
-					var $vid = $('<video width="258" height="210" controls/>').attr({
+					var $vid = $('<video class="my_video" width="258" height="210" controls/>').attr({
 						alt: $picEl.data( 'alt' ),
 						title: $picEl.data( 'title' ),
 						src: source.src
@@ -479,9 +479,14 @@ var Gamma = (function() {
 			Gamma.items.css( 'width', Math.floor( containerW / Gamma.columns ) * 100 / containerW + '%' );
 			var img_width = $('.masonry-brick img').css('width');
 			if(typeof(img_width)!=undefined){
-				$('video').attr('width',img_width);
-				$('video').attr('height','');
+				var vid_ele = $('video.my_video');
+				console.log(vid_ele.length);
+				if(vid_ele.length!=0){
+					$('video').attr('width',img_width);
+					$('video').attr('height','');
+				}
 			}
+			$(window).resize();
 
 		},
 		// initialize masonry
@@ -615,7 +620,6 @@ var Gamma = (function() {
 					source = _chooseImgSource( $item.data( 'source' ), Gamma.items.outerWidth( true ) );
 
 				$item.find( 'img' ).attr( 'src', source.src );
-				console.log('resize grid');
 
 			} );
 
@@ -1144,6 +1148,7 @@ var Gamma = (function() {
 				//_saveState();
 				if(is_vid) {
 					$('video').last().remove();
+					$(window).resize();
 				}
 
 			}, 25 );
